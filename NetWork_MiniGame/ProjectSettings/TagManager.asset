@@ -8,6 +8,14 @@ TagManager:
   - Score_2
   - Score_3
   - Score_4
+  - SScore_1
+  - SScore_2
+  - SScore_3
+  - SScore_4
+  - RScore_1
+  - RScore_2
+  - RScore_3
+  - RScore_4
   layers:
   - Default
   - TransparentFX

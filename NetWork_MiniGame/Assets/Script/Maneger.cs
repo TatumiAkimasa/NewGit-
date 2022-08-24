@@ -4,10 +4,13 @@ using UnityEngine;
 
 public class Maneger : MonoBehaviour
 {
+    public Transform Parent;
+    public GameObject Cell;
+
     // Start is called before the first frame update
     void Start()
     {
-        RegistScore();
+        GetRanking();
     }
 
     // Update is called once per frame
@@ -19,15 +22,15 @@ public class Maneger : MonoBehaviour
     /// <summary>
     /// サーバーにスコアを登録する
     /// </summary>
-    public void RegistScore()
+    public void RegistScore(int score,string name)
     {
         var api = new API<RegistScoreResponse>("https://kc-network-lesson.com/api/ranking/regist-score");
 
         //const stringでロックしとこうね
         api.AddRequest("uid", "ここにゲームの名前（被らず）を入れる");
         //同列だと最新側が優先して贈られる。
-        api.AddRequest("score", 100);
-        api.AddRequest("name", "PLの名前");
+        api.AddRequest("score", score);
+        api.AddRequest("name", name);
 
         StartCoroutine(api.SendWebRequest(respone =>
         {
@@ -49,7 +52,7 @@ public class Maneger : MonoBehaviour
         //const stringでロックしとこうね
         api.AddRequest("uid", "ここにゲームの名前（被らず）を入れる");
         //ランキング上位〇名
-        api.AddRequest("limit", 5);
+        api.AddRequest("limit", 10);
 
         StartCoroutine(api.SendWebRequest((respone) =>
         {
@@ -61,11 +64,26 @@ public class Maneger : MonoBehaviour
 
             for (int i = 0; i < respone.ranking.Length; ++i)
             {
+                GameObject cell_G = Instantiate(Cell, Vector3.zero, Quaternion.identity, Parent);
+                Cell_data cell = cell_G.GetComponent<Cell_data>();
+
                 //処理成功
-                Debug.Log("順位" + respone.ranking[i].rank);
-                Debug.Log("名前" + respone.ranking[i].name);
-                Debug.Log("スコア" + respone.ranking[i].score);
-                Debug.Log("日時" + respone.ranking[i].date);
+                cell.Rank_set(respone.ranking[i].rank.ToString());
+                cell.Name_set(respone.ranking[i].name);
+                cell.Score_set(respone.ranking[i].score.ToString());
+                cell.Time_set(respone.ranking[i].date);
+            }
+
+            for (int i = respone.ranking.Length + 1; i != 11 ; ++i)
+            {
+                GameObject cell_G = Instantiate(Cell, Vector3.zero, Quaternion.identity, Parent);
+                Cell_data cell = cell_G.GetComponent<Cell_data>();
+
+                //処理成功
+                cell.Rank_set(i.ToString());
+                cell.Name_set("NULL");
+                cell.Score_set("NULL");
+                cell.Time_set("NULL");
             }
         }));
     }

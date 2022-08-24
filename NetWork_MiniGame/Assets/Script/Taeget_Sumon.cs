@@ -13,7 +13,11 @@ public class Taeget_Sumon : MonoBehaviour
     [Header("èoåªéûä‘")]
     public int Sumoning_time;
 
-    protected const int SECOND = 60;
+    public Collider2D[] Coliders = new Collider2D[4];
+
+    public bool No_Destory;
+
+    public AudioClip Sound1;
     // Start is called before the first frame update
     void Start()
     {
@@ -26,19 +30,30 @@ public class Taeget_Sumon : MonoBehaviour
     {
         time_++;
 
-        if(time_==Wait_time*SECOND)
+        if(time_==Wait_time)
         {
-            this.gameObject.GetComponent<Collider2D>().enabled = true;
+            for(int i=0;i!=4;i++)
+            {
+                if(Coliders[i]!=null)
+                Coliders[i].enabled = true;
+            }
             this.gameObject.GetComponent<SpriteRenderer>().enabled = true;
             if(script!=null)
             script.enabled = true;
+
+            this.GetComponent<AudioSource>().PlayOneShot(Sound1);
         }
         else if(time_==Sumoning_time)
         {
-            this.gameObject.GetComponent<Collider2D>().enabled = false;
-            this.gameObject.GetComponent<SpriteRenderer>().enabled = false;
-            if (script != null)
-                script.enabled = false;
+            Destroy(this.gameObject);
         }
+    }
+
+    public void Destroy()
+    {
+        if (No_Destory != true)
+            Destroy(this.gameObject);
+        else
+            ;
     }
 }
